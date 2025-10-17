@@ -1,0 +1,27 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug com MinGW Make",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/Deadlock/output/program.exe",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "miDebuggerPath": "gdb.exe", // 💡 Verifique se é "gdb.exe" ou o caminho completo
+            "setupCommands": [
+                {
+                    "description": "Habilitar a formatação bonita para gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            // 💡 Novo: Adicione o pré-lançamento para compilar antes de debugar
+            "preLaunchTask": "make_debug" 
+        }
+    ]
+}
