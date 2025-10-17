@@ -1,59 +1,66 @@
-// EXEMPLO DO ZAMITH
-
 #include <stdio.h>
 #include <stdlib.h>
-#include <omp.h>
+#include <pthread.h>
+#include <time.h>
 
-#define N 10       // número de filósofos
+#define N 10
 #define STEPS 100
-//#define THINKING 0
-//#define HUNGRY   1
-//#define EATING   2
 
-omp_lock_t garfos[N];   // cada garfo é um lock
+pthread_mutex_t garfos[N];
 
 void pensar(int i) {
-    printf("Filósofo %d está pensando...\n", i);
-    
+  struct timespec ts = {1, 0};
+  printf("Filosofo %d esta pensando...\n", i);
+  nanosleep(&ts, NULL);
 }
 
 void comer(int i) {
-    printf("Filósofo %d está comendo!\n", i);
+  struct timespec ts = {1, 0};
+  printf("Filosofo %d esta comendo...\n", i);
+  nanosleep(&ts, NULL);
+}
+
+void* filosofo(void* arg) {
+  int i = *(int*)arg;
+  for (int k = 0; k < STEPS; k++) {
+    pensar(i);
+
+    // pega garfo à esquerda
+    pthread_mutex_lock(&garfos[i]);
+    // pega garfo à direita
+    pthread_mutex_lock(&garfos[(i+1)%N]);
+
+    comer(i);
+
+    // solta os garfos
+    pthread_mutex_unlock(&garfos[i]);
+    pthread_mutex_unlock(&garfos[(i+1)%N]);
+  }
+  return NULL;
 }
 
 int main() {
-    int i;
+  pthread_t threads[N];
+  int ids[N];
 
-    // inicializa locks (garfos)
-    for (i = 0; i < N; i++) {
-        omp_init_lock(&garfos[i]);
-    }
+  for (int i = 0; i < N; i++) {
+    pthread_mutex_init(&garfos[i], NULL);
+  }
 
-    // executa filósofos em paralelo
-    #pragma omp parallel num_threads(N) private(i)
-    {
-        i = omp_get_thread_num();
+  for (int i = 0; i < N; i++) {
+    ids[i] = i;
+    pthread_create(&threads[i], NULL, filosofo, &ids[i]);
+  }
 
-        for (int k = 0; k < STEPS; k++) { // cada filósofo come 3 vezes
-            pensar(i);
+  for (int i = 0; i < N; i++) {
+    pthread_join(threads[i], NULL);
+  }
 
-            // pega garfo à esquerda
-            omp_set_lock(&garfos[i]);
-            // pega garfo à direita (com cuidado para evitar deadlock)
-            omp_set_lock(&garfos[(i+1)%N]);
+  for (int i = 0; i < N; i++) {
+    pthread_mutex_destroy(&garfos[i]);
+  }
 
-            comer(i);
+  printf("Todos os filosofos terminaram suas refeicoes.\n");
 
-            // solta os garfos
-            omp_unset_lock(&garfos[i]);
-            omp_unset_lock(&garfos[(i+1)%N]);
-        }
-    }
-
-    // destrói locks
-    for (i = 0; i < N; i++) {
-        omp_destroy_lock(&garfos[i]);
-    }
-
-    return 0;
+  return 0;
 }

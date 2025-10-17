@@ -2,17 +2,21 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Debug com MinGW Make",
+            "name": "Debug: Producer-Consumers",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/Deadlock/output/program.exe",
-            "args": [],
+            // 💡 Executável específico: producer_consumers.exe
+            "program": "${workspaceFolder}/Deadlock/output/producer_consumers.exe",
+            "args": [
+                "4", // Exemplo de argumento: 4 consumidores
+                "1000" // Exemplo de argumento: 1000 itens
+            ],
             "stopAtEntry": false,
-            "cwd": "${workspaceFolder}",
+            "cwd": "${workspaceFolder}/Deadlock", // Diretório de trabalho dentro de Deadlock
             "environment": [],
-            "externalConsole": false,
+            "externalConsole": true, // Alterado para 'true' para ver o printf no console externo
             "MIMode": "gdb",
-            "miDebuggerPath": "gdb.exe", // 💡 Verifique se é "gdb.exe" ou o caminho completo
+            "miDebuggerPath": "gdb.exe",
             "setupCommands": [
                 {
                     "description": "Habilitar a formatação bonita para gdb",
@@ -20,7 +24,27 @@
                     "ignoreFailures": true
                 }
             ],
-            // 💡 Novo: Adicione o pré-lançamento para compilar antes de debugar
+            "preLaunchTask": "make_debug" 
+        },
+        {
+            "name": "Debug: Hungry Philosophers",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/Deadlock/output/hungry_philosophers.exe",
+            "args": [], // Sem argumentos necessários para este (geralmente)
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/Deadlock",
+            "environment": [],
+            "externalConsole": true, // Alterado para 'true'
+            "MIMode": "gdb",
+            "miDebuggerPath": "gdb.exe",
+            "setupCommands": [
+                {
+                    "description": "Habilitar a formatação bonita para gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
             "preLaunchTask": "make_debug" 
         }
     ]
