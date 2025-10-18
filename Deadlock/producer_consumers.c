@@ -163,15 +163,20 @@ static void* consumer_thread(void* arg) {
 }
 
 int main(int argc, char** argv) {
-	int				n_items;			// Número de itens a produzir
-	int				n_consumers;		// Número de consumidores
-	BQueue			q;					// Fila/buffer compartilhado
-	pthread_t		prod;				// Thread do produtor
-	ProducerArgs	pa;					// Argumentos do produtor
-	pthread_t*		cons;				// Vetor de threads dos consumidores
-	ConsumerArgs*	cargs;				// Vetor de argumentos dos consumidores
-	int		total = 0;			// Soma total dos itens consumidos
-	int		expected;			// Soma esperada
+	int				n_items			= 0;		// Número de itens a produzir
+	int				n_consumers		= 0;		// Número de consumidores
+	BQueue			q				= {0};		// Fila/buffer compartilhado
+	pthread_t		prod			= {0};		// Thread do produtor
+	ProducerArgs	pa				= {0};		// Argumentos do produtor
+	pthread_t*		cons			= {0};		// Vetor de threads dos consumidores
+	ConsumerArgs*	cargs			= {0};		// Vetor de argumentos dos consumidores
+	int				total 			= 0;		// Soma total dos itens consumidos
+	int				expected		= 0;		// Soma esperada
+
+	if (argc > 3) {
+		printf("Uso: %s [N_CONSUMIDORES] [ITENS]\n", argv[0]);
+		return 1;
+	}
 
 	// Processa argumentos da linha de comando
 	n_consumers = (argc > 1 ? atoi(argv[1]) : 4);
